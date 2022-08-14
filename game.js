@@ -57,7 +57,7 @@ class inputHandler {
           break;
         case 27:
           game.togglePause();
-          break
+          break;
         case 32:
           game.start();
           break;
@@ -122,13 +122,13 @@ class Ball {
     }
     if (this.y + this.size >= this.gameHeight) {
       this.game.lives -= 1;
-      this.reset()
+      this.reset();
       this.x = Math.random() * this.gameWidth;
       this.y = 450;
     }
   }
 }
-// import { buildLevel, level1, level2, level3, Rle } from "./levels.js";
+
 class Brick {
   constructor(game, x, y) {
     this.x = x;
@@ -192,10 +192,11 @@ const level2 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 const level1 = [
-  [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-  [0, 1, 1, 0, 0, 0, 0, 1, 1, 0],
-  [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+  [0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+  [1, 1, 1, 0, 1, 0, 1, 0, 1, 1],
 ];
 let x = 1;
 const Rle = [
@@ -210,8 +211,8 @@ const gameState = {
   running: 1,
   menu: 2,
   gameOver: 3,
-  newLevel: 4
-}
+  newLevel: 4,
+};
 
 class Game {
   constructor(gameWidth, gameHeight) {
@@ -229,27 +230,33 @@ class Game {
     new inputHandler(this.paddle, this);
   }
   start() {
-    if (this.gameState !== gameState.menu && this.gameState !== gameState.newLevel) return;
+    if (
+      this.gameState !== gameState.menu &&
+      this.gameState !== gameState.newLevel
+    )
+      return;
     this.bricks = buildLevel(this, this.lives[this.currentlevel]);
     this.ball.reset();
-    this.gameObject = [this.ball, this.paddle,];
+    this.gameObject = [this.ball, this.paddle];
     this.gameState = gameState.running;
   }
   restart() {
     if (this.gameState !== gameState.gameOver) return;
-    this.lives = 3
+    this.lives = 3;
     this.currentlevel = 0;
-    this.scor = 0
-    this.paddle.x = gameWidth / 2 - this.paddle.width / 2
+    this.scor = 0;
+    this.paddle.x = gameWidth / 2 - this.paddle.width / 2;
     this.bricks = buildLevel(this, this.lives[this.currentlevel]);
     this.gameState = gameState.running;
-
   }
   update(deltaTime) {
     if (this.lives === 0) this.gameState = gameState.gameOver;
-    if (this.gameState === gameState.paused ||
+    if (
+      this.gameState === gameState.paused ||
       this.gameState === gameState.gameOver ||
-      this.gameState === gameState.menu) return;
+      this.gameState === gameState.menu
+    )
+      return;
     if (this.bricks.length === 0) {
       this.gameState = gameState.newLevel;
       this.levels.push(Rle);
@@ -260,40 +267,54 @@ class Game {
         this.ball.speed.y += 0.1;
       }
       // console.log(this.currentlevel)
-      this.start()
+      this.start();
     }
-    [...this.gameObject, ...this.bricks].forEach((object) => object.update(deltaTime));
-    this.bricks = this.bricks.filter(brick => !brick.marcked);
+    [...this.gameObject, ...this.bricks].forEach((object) =>
+      object.update(deltaTime)
+    );
+    this.bricks = this.bricks.filter((brick) => !brick.marcked);
   }
   draw(ctx) {
     [...this.gameObject, ...this.bricks].forEach((object) => object.draw(ctx));
     if (this.gameState === gameState.paused) {
-      ctx.fillStyle = `rgba(0, 0, 0, 0.5)`
+      ctx.fillStyle = `rgba(0, 0, 0, 0.5)`;
       ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
       ctx.font = `30px Arial`;
       ctx.fillStyle = `White`;
       ctx.textAlign = `center`;
       ctx.fillText(`scor: ${this.scor}`, 70, 50);
-      ctx.fillText('Paused', this.gameWidth / 2, this.gameHeight / 2)
+      ctx.fillText("Paused", this.gameWidth / 2, this.gameHeight / 2);
     }
     if (this.gameState === gameState.menu) {
-      ctx.fillStyle = `rgba(0, 0, 0, 1)`
+      ctx.fillStyle = `rgba(0, 0, 0, 1)`;
       ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
       ctx.font = `30px Arial`;
       ctx.fillStyle = `White`;
       ctx.textAlign = `center`;
-      ctx.fillText('Press SPACEBAR', this.gameWidth / 2, this.gameHeight / 2);
-      ctx.fillText('to start playing', this.gameWidth / 2, this.gameHeight / 2 - 40);
+      ctx.fillText("Press SPACEBAR", this.gameWidth / 2, this.gameHeight / 2);
+      ctx.fillText(
+        "to start playing",
+        this.gameWidth / 2,
+        this.gameHeight / 2 - 40
+      );
     }
     if (this.gameState === gameState.gameOver) {
-      ctx.fillStyle = `rgba(0, 0, 0, 0.8)`
+      ctx.fillStyle = `rgba(0, 0, 0, 0.8)`;
       ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
       ctx.font = `30px Arial`;
       ctx.fillStyle = `White`;
       ctx.textAlign = `center`;
-      ctx.fillText('GAME OVER', this.gameWidth / 2, this.gameHeight / 2);
-      ctx.fillText(`your scor: ${this.scor}`, this.gameWidth / 2, this.gameHeight / 2 + 50);
-      ctx.fillText(`Press ENTER to play agen`, this.gameWidth / 2, this.gameHeight / 2 + 100);
+      ctx.fillText("GAME OVER", this.gameWidth / 2, this.gameHeight / 2);
+      ctx.fillText(
+        `your scor: ${this.scor}`,
+        this.gameWidth / 2,
+        this.gameHeight / 2 + 50
+      );
+      ctx.fillText(
+        `Press ENTER to play agen`,
+        this.gameWidth / 2,
+        this.gameHeight / 2 + 100
+      );
     }
     if (this.gameState === gameState.running) {
       ctx.font = `30px Arial`;
@@ -310,7 +331,7 @@ class Game {
       this.gameState = gameState.paused;
     }
   }
-};
+}
 let game = new Game(gameWidth, gameHeight);
 
 let lastTime = 0;
