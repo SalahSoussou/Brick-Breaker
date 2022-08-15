@@ -1,9 +1,10 @@
 /**@type {HTMLCanvasElement}*/
-
-let ctx = gScreen.getContext("2d");
-const gameWidth = 800;
-const gameHeight = 600;
-
+const cnv = document.getElementById("cnv"),
+  ctx = cnv.getContext("2d"),
+  gameWidth = 800,
+  gameHeight = 600;
+cnv.width = gameWidth;
+cnv.height = gameHeight;
 class Paddle {
   constructor(game) {
     this.gameWidth = game.gameWidth;
@@ -50,10 +51,12 @@ class inputHandler {
     document.addEventListener("keyup", (event) => {
       switch (event.keyCode) {
         case 37:
-          if (paddle.speed < 0) paddle.stop();
+          //if (paddle.speed < 0)
+          paddle.stop();
           break;
         case 39:
-          if (paddle.speed > 0) paddle.stop();
+          //if (paddle.speed > 0)
+          paddle.stop();
           break;
         case 27:
           game.togglePause();
@@ -137,7 +140,7 @@ class Brick {
     this.height = 24;
     this.game = game;
     this.marcked = false;
-    this.heu = Math.random() * 360;
+    this.heu = Math.random() * 255;
   }
   update() {
     let bottomOfBall = this.game.ball.y + this.game.ball.size;
@@ -159,7 +162,7 @@ class Brick {
     }
   }
   draw(ctx) {
-    ctx.fillStyle = `hsl(${this.heu}, 50%, 45%)`;
+    ctx.fillStyle = `hsl(${this.heu}, 80%, 45%)`;
     ctx.strokeStyle = "black";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.strokeRect(this.x, this.y, this.width, this.height);
